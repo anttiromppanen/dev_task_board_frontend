@@ -1,0 +1,15 @@
+{
+  "taskboard": {
+    "id": "66485ed5205af01e7331c312",
+    "name": "Testings name",
+    "tasks": [
+      {
+        "name": "Testings Task",
+        "description": "Some description",
+        "icon": "Icon",
+        "status": "In progress",
+        "id": "66485f50205af01e7331c314"
+      }
+    ]
+  }
+}
