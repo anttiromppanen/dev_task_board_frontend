@@ -4,6 +4,9 @@ import { useMutation, useQueryClient } from "react-query";
 import penImg from "../assets/images/Edit_duotone.svg";
 import logoImg from "../assets/images/Logo.svg";
 import { updateTaskboard } from "../services/taskboard_service";
+import { ErrorNotification, SuccessNotification } from "./Notification";
+import useTaskboards from "../hooks/useTaskboards";
+import useTaskboardStore from "../store/taskboardStore";
 
 interface MutationParams {
   id: string;
@@ -19,11 +22,12 @@ function EditTaskboardForm({
   setIsEditing: Dispatch<SetStateAction<boolean>>;
 }) {
   const queryClient = useQueryClient();
-  const [successModal, setSuccessModal] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationText, setNotificationText] = useState("");
   const [inputName, setInputName] = useState("");
   const [inputDescription, setInputDescription] = useState("");
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: (requestBody: MutationParams) => updateTaskboard(requestBody),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["taskboards"] }),
@@ -32,16 +36,12 @@ function EditTaskboardForm({
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
-    try {
-      mutate({ id, name: inputName, description: inputDescription });
-      setInputName("");
-      setInputDescription("");
+    mutate({ id, name: inputName, description: inputDescription });
+    setInputName("");
+    setInputDescription("");
 
-      setSuccessModal(true);
-      setTimeout(() => setSuccessModal(false), 3000);
-    } catch (error) {
-      console.log(error);
-    }
+    setShowNotification(true);
+    setNotificationText("Taskboard updated!");
 
     console.log("submitted");
   };
@@ -59,10 +59,19 @@ function EditTaskboardForm({
           >
             <XMarkIcon className="size-8 text-userDarkGrey" />
           </button>
-          {successModal && (
-            <div className="flex-[0_0_100%] rounded-md bg-userLightGreen p-2 text-center font-semibold">
-              Taskboard updated!
-            </div>
+          {isError && showNotification && error instanceof Error && (
+            <ErrorNotification
+              text={error.message}
+              setShowNotification={setShowNotification}
+              setNotificationText={setNotificationText}
+            />
+          )}
+          {!isError && showNotification && (
+            <SuccessNotification
+              text={notificationText}
+              setShowNotification={setShowNotification}
+              setNotificationText={setNotificationText}
+            />
           )}
         </div>
         <form
@@ -106,30 +115,29 @@ function EditTaskboardForm({
   );
 }
 
-function Header({
-  id,
-  name,
-  description,
-  isLoading,
-  isError,
-}: {
-  id: string;
-  name: string;
-  description: string;
-  isLoading: boolean;
-  isError: boolean;
-}) {
+function Header() {
   const [isEditing, setIsEditing] = useState(false);
+  const { activeTaskboardIndex } = useTaskboardStore();
+  const { taskboardsIsError, taskboardsAreLoading, taskboardsFromQuery } =
+    useTaskboards();
+
+  const currentTaskboard =
+    taskboardsFromQuery && taskboardsFromQuery[activeTaskboardIndex];
 
   return (
     <>
-      {isEditing && <EditTaskboardForm id={id} setIsEditing={setIsEditing} />}
+      {isEditing && (
+        <EditTaskboardForm
+          id={currentTaskboard && currentTaskboard.id}
+          setIsEditing={setIsEditing}
+        />
+      )}
       <header className="mt-12">
-        {isError && <h1>Error...</h1>}
+        {taskboardsIsError && <h1>Error...</h1>}
         <div className="flex items-center">
           <img src={logoImg} alt="logo" className="mr-4" />
           <h1 className="text-[2.5rem]">
-            {isLoading ? "Loading name..." : name}
+            {taskboardsAreLoading ? "Loading name..." : currentTaskboard?.name}
           </h1>
           <button
             type="button"
@@ -140,7 +148,9 @@ function Header({
           </button>
         </div>
         <h2 className="ml-[58px] font-light lg:font-normal">
-          {isLoading ? "Loading description..." : description}
+          {taskboardsAreLoading
+            ? "Loading description..."
+            : currentTaskboard?.description}
         </h2>
       </header>
     </>

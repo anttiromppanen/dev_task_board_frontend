@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 import Container from "./Container";
 import Header from "./Header";
-import { ITaskWithId } from "./Tasks/Task";
 import TasksSection from "./Tasks/TasksSection";
+import { ITaskWithId } from "../types/Task.types";
 
 export interface ITaskboard {
   id: string;
@@ -11,35 +11,11 @@ export interface ITaskboard {
   tasks: ITaskWithId[];
 }
 
-function Taskboard({
-  currentTaskboard,
-  setActiveTask,
-  setShowEditTask,
-  taskboardIsLoading,
-  taskboardIsError,
-}: {
-  currentTaskboard: ITaskboard;
-  setActiveTask: Dispatch<SetStateAction<ITaskWithId | null>>;
-  setShowEditTask: Dispatch<SetStateAction<boolean>>;
-  taskboardIsLoading: boolean;
-  taskboardIsError: boolean;
-}) {
+function Taskboard() {
   return (
     <Container>
-      <Header
-        id={currentTaskboard && currentTaskboard.id}
-        name={currentTaskboard && currentTaskboard.name}
-        description={currentTaskboard && currentTaskboard.description}
-        isLoading={taskboardIsLoading}
-        isError={taskboardIsError}
-      />
-      <TasksSection
-        tasks={currentTaskboard && currentTaskboard.tasks}
-        setActiveTask={setActiveTask}
-        setShowEditTask={setShowEditTask}
-        isLoading={taskboardIsLoading}
-        isError={taskboardIsError}
-      />
+      <Header />
+      <TasksSection />
       <button
         type="button"
         className="mt-10 h-16 w-full rounded-xl bg-green-500"

@@ -1,17 +1,15 @@
 import { PlusIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import { Dispatch, SetStateAction } from "react";
 import { ITaskboard } from "./Taskboard";
 import BlackOverlay from "./BlackOverlay";
+import useConditionalViewsStore from "../store/conditionalViewsStore";
+import useTaskboardStore from "../store/taskboardStore";
+import useTaskboards from "../hooks/useTaskboards";
 
-function CreateTaskboard({
-  setShowSavedTaskboards,
-  taskboardsFromQuery,
-  setActivetaskboardIndex,
-}: {
-  setShowSavedTaskboards: Dispatch<SetStateAction<boolean>>;
-  taskboardsFromQuery: ITaskboard[];
-  setActivetaskboardIndex: Dispatch<SetStateAction<number>>;
-}) {
+function CreateTaskboard() {
+  const { taskboardsFromQuery } = useTaskboards();
+  const { setShowSavedTaskboards } = useConditionalViewsStore((state) => state);
+  const { setActiveTaskboardIndex } = useTaskboardStore((state) => state);
+
   return (
     <>
       <BlackOverlay />
@@ -37,7 +35,7 @@ function CreateTaskboard({
               <button
                 key={taskboard.id}
                 type="button"
-                onClick={() => setActivetaskboardIndex(i)}
+                onClick={() => setActiveTaskboardIndex(i)}
                 className="border-b border-b-userLightGrey py-3 text-left transition-all hover:pl-2"
               >
                 <article key={taskboard.id}>
