@@ -1,23 +1,20 @@
-import useFormViews from "../../hooks/useFormViews";
 import useTaskboards from "../../hooks/useTaskboards";
 import useConditionalViewsStore from "../../store/conditionalViewsStore";
 import useTaskboardStore from "../../store/taskboardStore";
 import { ITaskWithId } from "../../types/Task.types";
+import NewTaskButton from "./NewTaskButton";
 import Task from "./Task";
 
 function TasksSection() {
   const { setShowEditTask } = useConditionalViewsStore((state) => state);
-  const {
-    taskboardsAreLoading,
-    taskboardsIsError,
-    taskboards,
-    taskboardsFromQuery,
-  } = useTaskboards();
+  const { taskboardsAreLoading, taskboardsIsError, taskboardsFromQuery } =
+    useTaskboards();
   const { activeTaskboardIndex } = useTaskboardStore((state) => state);
   const { setActiveTask } = useTaskboardStore((state) => state);
   const currentTaskboard =
     taskboardsFromQuery && taskboardsFromQuery[activeTaskboardIndex];
 
+  // opens up task edit view if task found
   const handleTaskClick = (id: string) => {
     const findTask = currentTaskboard.tasks.find(
       (x: ITaskWithId) => x.id === id,
@@ -29,7 +26,7 @@ function TasksSection() {
   };
 
   return (
-    <section className="mt-10 flex flex-col gap-y-5">
+    <section className="mb-12 mt-10 flex flex-col gap-y-5">
       {taskboardsAreLoading && <h1>Loading tasks...</h1>}
       {taskboardsIsError && <h1>Error...</h1>}
       {currentTaskboard &&
@@ -45,6 +42,7 @@ function TasksSection() {
             />
           ),
         )}
+      <NewTaskButton />
     </section>
   );
 }

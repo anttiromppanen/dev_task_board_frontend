@@ -1,12 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
+import useTaskFormStore from "../../store/taskFormStore";
 
-function NameInput({
-  nameInputValue,
-  setNameInputValue,
-}: {
-  nameInputValue: string;
-  setNameInputValue: Dispatch<SetStateAction<string>>;
-}) {
+function NameInput() {
+  const { nameInputValue } = useTaskFormStore((state) => state);
+  const { setNameInputValue } = useTaskFormStore((state) => state);
+
   return (
     <label htmlFor="name">
       Task name

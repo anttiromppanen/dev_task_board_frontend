@@ -1,17 +1,14 @@
-import { Dispatch, SetStateAction } from "react";
 import { CheckIcon } from "@heroicons/react/16/solid";
 import { rightIconSelector } from "../../helpers/taskHelpers";
-import { StatusType, StatusWithoutTodo } from "../../types/Task.types";
+import useTaskFormStore from "../../store/taskFormStore";
+import { StatusWithoutTodo } from "../../types/Task.types";
 
 const statusRadioButtons = Object.entries(rightIconSelector).slice(0, 3); // filter out todo from index 3
 
-export default function StatusRadioButtons({
-  activeStatus,
-  setActiveStatus,
-}: {
-  activeStatus: StatusType;
-  setActiveStatus: Dispatch<SetStateAction<StatusType>>;
-}) {
+export default function StatusRadioButtons() {
+  const { statusInputValue } = useTaskFormStore((state) => state);
+  const { setStatusInputValue } = useTaskFormStore((state) => state);
+
   return (
     <div>
       <p>Status</p>
@@ -22,7 +19,7 @@ export default function StatusRadioButtons({
             htmlFor={value}
             className={`
                   relative flex items-center gap-x-2 rounded-xl border-2 border-userLightGrey p-0.5 focus-within:outline focus-within:outline-2 focus-within:!outline-userOrange 
-                  ${activeStatus === value && "outline outline-2 outline-userBlue"}
+                  ${statusInputValue === value && "outline outline-2 outline-userBlue"}
                   `}
           >
             <input
@@ -30,8 +27,8 @@ export default function StatusRadioButtons({
               name="status"
               id={value}
               value={value}
-              onChange={() => setActiveStatus(value as StatusWithoutTodo)}
-              checked={value === activeStatus}
+              onChange={() => setStatusInputValue(value as StatusWithoutTodo)}
+              checked={value === statusInputValue}
               className="sr-only"
             />
             <div
@@ -45,7 +42,7 @@ export default function StatusRadioButtons({
               {icon}
             </div>
             <p>{value}</p>
-            {value === activeStatus && (
+            {value === statusInputValue && (
               <div className="absolute right-3 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-full bg-userBlue p-0.5">
                 <CheckIcon className="text-white" />
               </div>

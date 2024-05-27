@@ -1,12 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
+import useTaskFormStore from "../../store/taskFormStore";
 
-function DescriptionTextarea({
-  descriptionInputValue,
-  setDescriptionInputValue,
-}: {
-  descriptionInputValue: string;
-  setDescriptionInputValue: Dispatch<SetStateAction<string>>;
-}) {
+function DescriptionTextarea() {
+  const { descriptionInputValue } = useTaskFormStore((state) => state);
+  const { setDescriptionInputValue } = useTaskFormStore((state) => state);
+
   return (
     <label htmlFor="description">
       Description

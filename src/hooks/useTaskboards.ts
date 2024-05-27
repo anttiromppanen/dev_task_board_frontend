@@ -6,11 +6,28 @@ import {
 } from "../services/taskboard_service";
 import useConditionalViewsStore from "../store/conditionalViewsStore";
 import useTaskboardStore from "../store/taskboardStore";
+import { ITaskboard } from "../types/Task.types";
 
 const useTaskboards = () => {
   const { taskboardsFromLocalStorage } = useTaskboardStore((state) => state);
   const { setTaskboardsFromLocalStorage } = useTaskboardStore((state) => state);
   const { setShowSavedTaskboards } = useConditionalViewsStore((state) => state);
+
+  const onSuccessFilterLocalStorage = (data: ITaskboard[]) => {
+    const localStorageTaskboards = JSON.parse(
+      localStorage.getItem("taskboards") || "",
+    );
+
+    const responseTaskboardIdsSet = new Set(
+      data.map((taskboard: ITaskboard) => taskboard.id),
+    );
+    const filteredLocalStorage = localStorageTaskboards.filter((id: string) =>
+      responseTaskboardIdsSet.has(id),
+    );
+
+    setTaskboardsFromLocalStorage(filteredLocalStorage);
+    localStorage.setItem("taskboards", JSON.stringify(filteredLocalStorage));
+  };
 
   const {
     data: taskboardsFromQuery,
@@ -21,6 +38,7 @@ const useTaskboards = () => {
     queryFn: () => getMultipleTaskboards(taskboardsFromLocalStorage),
     refetchOnWindowFocus: false,
     enabled: taskboardsFromLocalStorage.length > 0,
+    onSuccess: (data) => onSuccessFilterLocalStorage(data),
   });
 
   const { mutateAsync } = useMutation({

@@ -29,3 +29,10 @@ export interface ITaskVariantStyles {
   leftImage: string;
   rightImage: string;
 }
+
+export interface ITaskboard {
+  id: string;
+  name: string;
+  description: string;
+  tasks: ITaskWithId[];
+}
